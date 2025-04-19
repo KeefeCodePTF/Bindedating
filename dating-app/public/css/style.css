@@ -1,0 +1,18 @@
+/* style.css - Central import hub for all styles */
+
+/* 1. Base styles (resets, typography, colors) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import './base.css';
+
+/* 2. Layout styles (containers, grid, spacing) */
+@import './layout.css';
+
+/* 3. Component styles (buttons, cards, nav, etc.) */
+@import './components.css';
+
+/* 4. Form elements (inputs, labels, mcqs) */
+@import './form.css';
+
+/* 5. Page-specific styles */
+@import './pages/dashboard.css';
+@import './pages/profile.css';

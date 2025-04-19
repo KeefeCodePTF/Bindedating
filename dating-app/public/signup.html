@@ -1,0 +1,63 @@
+<!-- public/signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <title>Signup</title>
+</head>
+<body>
+  <div class="form-container">
+    <form onsubmit="signup(event)">
+      <h1>Signup</h1>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Your email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Your password" required />
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <script>
+    function signup(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      fetch("/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      })
+      .then(res => {
+  if (res.ok) {
+    // Save user info for later use in profile
+    sessionStorage.setItem("userSignup", JSON.stringify({ name, email, password }));
+    window.location.href = "/profile.html";
+        } else {
+          return res.text().then(text => alert("Signup failed: " + text));
+        }
+      })
+      .catch(err => {
+        console.error("Signup error:", err);
+        alert("An error occurred.");
+      });
+    }
+  </script>
+</body>
+</html>

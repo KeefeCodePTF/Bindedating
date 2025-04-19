@@ -1,0 +1,57 @@
+[
+  {
+    "id": "user_1744969934741_824",
+    "email": "",
+    "passwordHash": "",
+    "profile": {
+      "name": ""
+    },
+    "matching": {
+      "Show me": [
+        "Men"
+      ],
+      "maxDistance": 1,
+      "distanceUnit": "km",
+      "interests": [
+        "Vanilla"
+      ]
+    },
+    "location": {
+      "ip": "::1",
+      "lat": null,
+      "lng": null
+    },
+    "createdAt": "2025-04-18T09:52:14.741Z",
+    "lastActiveAt": "2025-04-18T09:52:14.743Z"
+  },
+  {
+    "name": "Keefe",
+    "email": "name7@outlook.com",
+    "password": "P@$$word1!"
+  },
+  {
+    "id": "user_1744970496188_764",
+    "email": "",
+    "passwordHash": "",
+    "profile": {
+      "name": ""
+    },
+    "matching": {
+      "Show me": [
+        "Men"
+      ],
+      "maxDistance": 1,
+      "distanceUnit": "km",
+      "interests": [
+        "Vanilla"
+      ]
+    },
+    "location": {
+      "ip": "::1",
+      "lat": null,
+      "lng": null
+    },
+    "createdAt": "2025-04-18T10:01:36.188Z",
+    "lastActiveAt": "2025-04-18T10:01:36.188Z"
+  }
+]

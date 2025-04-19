@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <div class="profile-form-container">
+    <h1>Create Your Binded Dating Profile</h1>
+    <div class="upload-section">
+      <label for="media-upload" class="upload-button">Upload</label>
+      <input
+        type="file"
+        id="media-upload"
+        accept="image/*,video/*"
+        multiple
+        style="display: none"
+        onchange="handleMediaUpload(event)"
+      />
+      <div class="upload-instructions">Upload 1-3 images/videos</div>
+      <div class="preview-container" id="preview-container"></div>
+    </div>
+
+    <form onsubmit="saveAndNext(event)">
+    <div class="form-section">
+      <label>I am a...</label>
+      <div class="radio-options">
+        <label><input type="radio" name="gender" value="Man"> Man</label>
+        <label><input type="radio" name="gender" value="Woman"> Woman</label>
+        <label><input type="radio" name="gender" value="Couple"> Couple</label>
+      </div>
+    </div>
+  
+    <div class="form-section">
+      <label>My Role</label>
+      <div class="radio-options">
+        <label><input type="radio" name="role" value="Dom"> Dominant</label>
+        <label><input type="radio" name="role" value="Sub"> Submissive</label>
+        <label><input type="radio" name="role" value="Switch"> Switch</label>
+        <label><input type="radio" name="role" value="Unknown"> Not sure yet</label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label>Profile Description</label>
+      <div class="textarea-wrapper">
+        <textarea maxlength="1000" name="description" oninput="updateCounter(this)"></textarea>
+        <div class="char-counter">0 / 1000</div>
+      </div>
+    </div>
+  
+    <div class="form-section">
+      <label>Relationship Goals</label>
+      <div class="textarea-wrapper">
+        <textarea maxlength="1000" name="relationshipGoals" oninput="updateCharCount(this)"></textarea>
+        <div class="char-counter">0 / 1000</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label>Hard Limits</label>
+      <div class="textarea-wrapper">
+        <textarea maxlength="1000" name="hardLimits" oninput="updateCharCount(this)"></textarea>
+        <div class="char-counter">0 / 1000</div>
+      </div>
+    </div>
+  
+    <div class="form-section">
+      <label>Soft Limits</label>
+      <div class="textarea-wrapper">
+        <textarea maxlength="1000" name="softLimits" oninput="updateCharCount(this)"></textarea>
+        <div class="char-counter">0 / 1000</div>
+      </div>
+    </div>
+  </form>
+<button class="submit-btn" type="submit">Next</button>
+</form>
+
+<script>
+function saveAndNext(event) {
+  event.preventDefault();
+
+  const formData = new FormData(document.querySelector(".profile-form-container")); // ✅ select whole container
+
+  const profileData = {};
+  for (let [key, value] of formData.entries()) {
+    profileData[key] = value;
+  }
+
+  profileData.email = document.getElementById('email').value; // ✅ manually grab readonly field
+
+  sessionStorage.setItem('profileStep1', JSON.stringify(profileData));
+  window.location.href = '/matching.html';
+}
+</script>
+
+<script>
+  function updateCounter(textarea) {
+    const counter = textarea.nextElementSibling;
+    const maxLength = textarea.getAttribute("maxlength");
+    counter.textContent = `${textarea.value.length} / ${maxLength}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".textarea-wrapper textarea").forEach(textarea => {
+      // Initial update
+      updateCounter(textarea);
+
+      // Attach event listener to update on input
+      textarea.addEventListener("input", () => updateCounter(textarea));
+    });
+  });
+</script>
+
+<script>
+  function handleMediaUpload(event) {
+    const files = Array.from(event.target.files).slice(0, 3); // Max 3
+    const previewContainer = document.getElementById("preview-container");
+    previewContainer.innerHTML = ""; // Clear previous previews
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        let preview;
+        if (file.type.startsWith("image/")) {
+          preview = document.createElement("img");
+          preview.src = e.target.result;
+        } else if (file.type.startsWith("video/")) {
+          preview = document.createElement("video");
+          preview.src = e.target.result;
+          preview.controls = true;
+        }
+
+        previewContainer.appendChild(preview);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(sessionStorage.getItem("userSignup"));
+    if (user) {
+      // You can display email as read-only or hidden
+      const emailField = document.createElement('input');
+      emailField.type = 'hidden';
+      emailField.id = 'email';
+      emailField.value = user.email;
+      document.body.appendChild(emailField);
+
+      // You could also pre-fill their name if you show it
+    }
+  });
+</script>

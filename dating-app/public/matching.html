@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/style.css" />
+    <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Matching Preferences</title>
+  <script>
+    function selectOption(groupName, value, isMulti = false) {
+      const group = document.querySelector(`.mcq-${groupName}`);
+      const options = group.querySelectorAll('.mcq-option');
+
+      options.forEach(opt => {
+        if (!isMulti) {
+          opt.classList.remove('selected');
+        }
+        if (opt.dataset.value === value) {
+          if (isMulti) {
+            opt.classList.toggle('selected');
+          } else {
+            opt.classList.add('selected');
+          }
+        }
+      });
+
+      const selectedValues = Array.from(options)
+        .filter(opt => opt.classList.contains('selected'))
+        .map(opt => opt.dataset.value);
+
+      document.getElementById(groupName).value = selectedValues.join(',');
+
+    }
+  </script>
+</head>
+<body>
+  <h1>Set Your Matching Preferences</h1>
+  <form onsubmit="combineAndSubmit(event)">
+
+    <label>Show me...</label>
+    <div class="mcq-group mcq-attraction">
+      <div class="mcq-option" data-value="Men" onclick="selectOption('attraction', 'Men', true)">Men</div>
+      <div class="mcq-option" data-value="Women" onclick="selectOption('attraction', 'Women', true)">Women</div>
+      <div class="mcq-option" data-value="Couples" onclick="selectOption('attraction', 'Couples', true)">Couples</div>
+    </div>
+    <input type="hidden" name="attraction" id="attraction">
+
+    <label>Show me people within...</label>
+    <div class="inline">
+      <input type="number" name="distance" min="1" max="1000" required />
+      <select name="distanceUnit">
+        <option value="km">km</option>
+        <option value="miles">miles</option>
+      </select>
+    </div>
+
+    <label>I'm interested in...</label>
+    <div class="mcq-group mcq-interests">
+      <div class="mcq-option" data-value="Vanilla" onclick="selectOption('interests', 'Vanilla', true)">Vanilla</div>
+      <div class="mcq-option" data-value="Dominants" onclick="selectOption('interests', 'Dominants', true)">Dominants</div>
+      <div class="mcq-option" data-value="Submissives" onclick="selectOption('interests', 'Submissives', true)">Submissives</div>
+      <div class="mcq-option" data-value="Switch" onclick="selectOption('interests', 'Switch', true)">Switch</div>
+      <div class="mcq-option" data-value="24/7 lifestyle" onclick="selectOption('interests', '24/7 lifestyle', true)">24/7 lifestyle</div>
+      <div class="mcq-option" data-value="Online only" onclick="selectOption('interests', 'Online only', true)">Online only</div>
+      <div class="mcq-option" data-value="Still exploring / Curious" onclick="selectOption('interests', 'Still exploring / Curious', true)">Still exploring / Curious</div>
+    </div>
+    <input type="hidden" name="interests" id="interests">
+
+    <form onsubmit="combineAndSubmit(event)">
+      <!-- … -->
+      <button type="submit">Save Profile</button>
+    </form>
+    <script>
+      function combineAndSubmit(event) {
+        /* … build fullProfile … */
+        fetch("/profile", { /* … */ })
+          /* add the improved then/catch above */
+      }
+    </script>
+</body>
+</html>
+
+<script>
+  function combineAndSubmit(event) {
+    event.preventDefault();
+
+    const step1 = JSON.parse(sessionStorage.getItem('profileStep1') || '{}');
+    const form = event.target;
+    const formData = new FormData(form);
+
+    const step2 = {};
+    for (let [key, value] of formData.entries()) {
+      step2[key] = value;
+    }
+
+    const fullProfile = {
+      profile: {
+        name: step1.name || "",
+        email: step1.email || "", // ✅ Required for backend
+        gender: step1.gender || "",
+        role: step1.role || "",
+        description: step1.description || "",
+        relationshipGoals: step1.relationshipGoals || "",
+        softLimits: step1.softLimits || "",
+        hardLimits: step1.hardLimits || ""
+      },
+      matching: {
+        "Show me": (step2.attraction || "").split(','),
+        maxDistance: Number(step2.distance || 0),
+        distanceUnit: step2.distanceUnit || "km",
+        interests: (step2.interests || "").split(',')
+      }
+    };
+
+    fetch("/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(fullProfile)
+    }).then(res => {
+      if (res.ok) {
+        window.location.href = "/dashboard.html";
+      } else {
+        res.text().then(msg => alert("Error saving profile: " + msg));
+      }
+    }).catch(err => {
+      console.error("Submission failed:", err);
+      alert("An error occurred while submitting your profile.");
+    });
+  }
+</script>

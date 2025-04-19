@@ -1,0 +1,26 @@
+<!-- public/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/css/style.css" />
+<body>
+  <div class="dashboard-container">
+    <div class="welcome-info">
+      <h1 id="welcome">Welcome!</h1>
+      <p id="emailDisplay">Email: </p>
+      <div class="nav-links">
+        <a href="/profile">Create/Edit Profile</a>
+        <a href="/">Back to Home</a>
+      </div>
+    </div>
+
+    <div id="card-container" class="card-stack"></div>
+
+    <form method="POST" action="/logout" class="logout-form">
+      <button type="submit" class="logout-btn">Logout</button>
+    </form>
+  </div>
+
+  <script src="/js/swipe.js"></script>
+</body>
+</html>
