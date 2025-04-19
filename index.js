@@ -29,11 +29,12 @@ app.get('/dashboard', (req, res) => {
 app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, 'dating-app', 'public', 'profile.html'));
 });
-
 app.get('/matching.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'dating-app', 'public', 'matching.html'));
 });
-
+app.get('/swipe', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dating-app', 'public', 'swipe.html'));
+});
 
 
 // Use routes
@@ -42,11 +43,19 @@ app.use(authRoutes);
 
 // Use profileRoutes
 const profileRoutes = require('./routes/profileRoutes');
-app.use('/', profileRoutes);
+app.use(profileRoutes);
 
 // User matchRoutes
 const matchRoutes = require('./routes/matchRoutes');
-app.use('/', matchRoutes);
+app.use(matchRoutes);
+
+// Use Swipe routes
+const swipeRoutes = require('./routes/swipeRoutes');
+app.use(swipeRoutes);
+
+//Use Message Routes
+const messageRoutes = require('./routes/messageRoutes');
+app.use(messageRoutes);
 
 // Start server
 app.listen(PORT, () => {

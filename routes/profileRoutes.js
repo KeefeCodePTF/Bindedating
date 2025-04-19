@@ -4,6 +4,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const geoip = require('geoip-lite');
 const router = express.Router();
+const fileHandler = require('../utils/fileHandler');
 
 const usersFilePath = path.join(__dirname, '..', 'users.json');
 

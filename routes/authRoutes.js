@@ -5,6 +5,8 @@ const { isValidName, isValidPassword } = require('../utils/validators');
 const { readUsers, writeUsers } = require('../utils/fileHandler');
 
 // Signup
+const generateUserId = () => `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -18,17 +20,49 @@ router.post('/signup', async (req, res) => {
 
   try {
     const users = await readUsers();
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = users.find(u => u.profile?.email === email || u.email === email);
 
     if (existingUser) {
       return res.send(`<script>alert('⚠️ Email already registered.'); window.location.href='/signup';</script>`);
     }
 
-    const newUser = { name, email, password };
+    const newUser = {
+      id: generateUserId(),
+      password,
+      profile: {
+        name,
+        email,
+        gender: '',
+        role: '',
+        description: '',
+        relationshipGoals: '',
+        softLimits: '',
+        hardLimits: ''
+      },
+      interactions: {
+        likes: [],
+        passes: [],
+        matches: []
+      },
+      matching: {
+        "Show me": [],
+        maxDistance: 100,
+        distanceUnit: "km",
+        interests: []
+      },
+      location: {
+        ip: '',
+        lat: null,
+        lng: null
+      },
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString()
+    };
+
     users.push(newUser);
     await writeUsers(users);
 
-    console.log('New user saved:', newUser);
+    console.log('✅ New user registered:', newUser);
     return res.redirect('/signup-success');
 
   } catch (err) {

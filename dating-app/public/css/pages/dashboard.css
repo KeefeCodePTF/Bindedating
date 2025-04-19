@@ -38,3 +38,54 @@
   .logout-form {
     margin-top: 10px;
   }
+
+  .matches-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .match-button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: #ddd;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+  }
+  
+  .chat-box {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    max-width: 500px;
+    padding: 10px;
+  }
+  
+  .chat-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+  
+  .chat-form {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-form input {
+    flex: 1;
+    padding: 8px;
+  }
+  
+  .hidden {
+    display: none;
+  }
