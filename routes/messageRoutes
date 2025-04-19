@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const router = express.Router();
 
-const messagesPath = path.join(__dirname, '..', 'messages.json');
+const messagesPath = path.join(__dirname, '..', 'data', 'messages.json');
 const usersPath = path.join(__dirname, '..', 'users.json');
 
 router.post('/message', (req, res) => {

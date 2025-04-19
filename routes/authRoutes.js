@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 
 const { isValidName, isValidPassword } = require('../utils/validators');
 const { readUsers, writeUsers } = require('../utils/fileHandler');
 
-// Signup
 const generateUserId = () => `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
+// ✅ SIGNUP ROUTE
 router.post('/signup', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, location } = req.body;
 
   if (!isValidName(name)) {
     return res.send(`<script>alert('❌ Invalid name.'); window.location.href='/signup';</script>`);
@@ -26,9 +27,11 @@ router.post('/signup', async (req, res) => {
       return res.send(`<script>alert('⚠️ Email already registered.'); window.location.href='/signup';</script>`);
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = {
       id: generateUserId(),
-      password,
+      password: hashedPassword,
       profile: {
         name,
         email,
@@ -50,7 +53,7 @@ router.post('/signup', async (req, res) => {
         distanceUnit: "km",
         interests: []
       },
-      location: {
+      location: location ? JSON.parse(location) : {
         ip: '',
         lat: null,
         lng: null
@@ -66,20 +69,20 @@ router.post('/signup', async (req, res) => {
     return res.redirect('/signup-success');
 
   } catch (err) {
-    console.error('Error in signup:', err);
+    console.error('❌ Error in signup:', err);
     return res.status(500).send('Internal server error');
   }
 });
 
-// Login
+// ✅ LOGIN ROUTE
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const users = await readUsers();
-    const user = users.find(u => u.email === email && u.password === password);
+    const user = users.find(u => u.email === email || u.profile?.email === email);
 
-    if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.send(`<script>alert('Invalid credentials.'); window.location.href='/login';</script>`);
     }
 
@@ -90,9 +93,10 @@ router.post('/login', async (req, res) => {
       </script>
     `;
 
-    res.send(script);
+    return res.send(script);
+
   } catch (err) {
-    console.error('Error in login:', err);
+    console.error('❌ Error in login:', err);
     return res.status(500).send('Internal server error');
   }
 });

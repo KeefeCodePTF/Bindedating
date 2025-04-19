@@ -16,3 +16,4 @@
 /* 5. Page-specific styles */
 @import './pages/dashboard.css';
 @import './pages/profile.css';
+@import './pages/matching.css';

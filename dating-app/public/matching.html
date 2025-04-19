@@ -36,6 +36,26 @@
   <h1>Set Your Matching Preferences</h1>
   <form onsubmit="combineAndSubmit(event)">
 
+    <div class="form-section">
+      <label>I am a...</label>
+      <div class="radio-options">
+        <label><input type="radio" name="gender" value="Man"> Man</label>
+        <label><input type="radio" name="gender" value="Woman"> Woman</label>
+        <label><input type="radio" name="gender" value="Couple"> Couple</label>
+      </div>
+    </div>
+  
+    <div class="form-section">
+      <label>My Role</label>
+      <div class="radio-options">
+        <label><input type="radio" name="role" value="Dom"> Dominant</label>
+        <label><input type="radio" name="role" value="Sub"> Submissive</label>
+        <label><input type="radio" name="role" value="Switch"> Switch</label>
+        <label><input type="radio" name="role" value="Unknown"> Not sure yet</label>
+      </div>
+    </div>
+
+
     <label>Show me...</label>
     <div class="mcq-group mcq-attraction">
       <div class="mcq-option" data-value="Men" onclick="selectOption('attraction', 'Men', true)">Men</div>

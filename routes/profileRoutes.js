@@ -2,9 +2,14 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const geoip = require('geoip-lite');
 const router = express.Router();
 const fileHandler = require('../utils/fileHandler');
+const multer = require('multer');
+const upload = multer({ dest: 'public/uploads/' });
+
+router.post('/upload', upload.single('profilePic'), (req, res) => {
+  // Save `req.file.filename` in user profile
+});
 
 const usersFilePath = path.join(__dirname, '..', 'users.json');
 

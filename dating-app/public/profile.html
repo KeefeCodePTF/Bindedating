@@ -23,24 +23,14 @@
     </div>
 
     <form onsubmit="saveAndNext(event)">
-    <div class="form-section">
-      <label>I am a...</label>
-      <div class="radio-options">
-        <label><input type="radio" name="gender" value="Man"> Man</label>
-        <label><input type="radio" name="gender" value="Woman"> Woman</label>
-        <label><input type="radio" name="gender" value="Couple"> Couple</label>
+
+      <div class="user-info-box">
+        <h3>User Info</h3>
+        <p><strong>Name:</strong> <span id="display-name"></span></p>
+        <p><strong>Email:</strong> <span id="display-email"></span></p>
+        <p><strong>Password:</strong> <span id="display-password"></span></p>
+        <p><strong>ID:</strong> <span id="display-id"></span></p>
       </div>
-    </div>
-  
-    <div class="form-section">
-      <label>My Role</label>
-      <div class="radio-options">
-        <label><input type="radio" name="role" value="Dom"> Dominant</label>
-        <label><input type="radio" name="role" value="Sub"> Submissive</label>
-        <label><input type="radio" name="role" value="Switch"> Switch</label>
-        <label><input type="radio" name="role" value="Unknown"> Not sure yet</label>
-      </div>
-    </div>
 
     <div class="form-section">
       <label>Profile Description</label>
@@ -73,9 +63,10 @@
         <div class="char-counter">0 / 1000</div>
       </div>
     </div>
-  </form>
-<button class="submit-btn" type="submit">Next</button>
-</form>
+    <div class="form-section">
+      <button class="submit-btn" type="submit">Next</button>
+    </div>
+    </form>
 
 <script>
 function saveAndNext(event) {
@@ -154,3 +145,5 @@ function saveAndNext(event) {
     }
   });
 </script>
+
+<script src="/js/errorHandler.js"></script>

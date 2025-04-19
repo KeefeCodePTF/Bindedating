@@ -61,3 +61,14 @@
   </script>
 </body>
 </html>
+
+<script>
+navigator.geolocation.getCurrentPosition(pos => {
+  localStorage.setItem('location', JSON.stringify({
+    lat: pos.coords.latitude,
+    lng: pos.coords.longitude
+  }));
+});
+</script>
+
+<script src="/js/errorHandler.js"></script>
