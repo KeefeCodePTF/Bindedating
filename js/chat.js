@@ -2,21 +2,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const user = JSON.parse(localStorage.getItem("loggedInUser"));
     if (!user) return;
   
+    const matchContainer = document.getElementById("matches-container");
+    const chatForm = document.getElementById("chat-form");
+    const chatBox = document.getElementById("chat-box");
+  
     fetch("/matches/" + user.email)
       .then(res => res.json())
       .then(matches => {
-        const matchContainer = document.getElementById("matches-container");
-        matches.forEach(match => {
-          const button = document.createElement("button");
-          button.className = "match-button";
-          button.textContent = match.profile.name;
-          button.dataset.id = match.id;
-          button.addEventListener("click", () => openChat(match));
-          matchContainer.appendChild(button);
-        });
+        matchContainer.innerHTML = "";
+  
+        if (!matches.length) {
+          matchContainer.innerHTML = "<p class='no-matches'>No matches yet.</p>";
+        } else {
+          matches.forEach(match => {
+            const button = document.createElement("button");
+            button.className = "match-button";
+            button.textContent = match.profile.name;
+            button.dataset.id = match.id;
+            button.addEventListener("click", () => openChat(match));
+            matchContainer.appendChild(button);
+          });
+        }
+  
+        chatBox.classList.remove("hidden");
       });
   
-    const chatForm = document.getElementById("chat-form");
     chatForm.addEventListener("submit", sendMessage);
   });
   
@@ -29,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
     currentMatch = match;
     chatHeader.textContent = "Chatting with " + match.profile.name;
-    chatBox.classList.remove("hidden");
     chatMessages.innerHTML = "";
   
     const user = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -42,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
           msgEl.textContent = `${m.from === user.id ? "You" : match.profile.name}: ${m.content}`;
           chatMessages.appendChild(msgEl);
         });
+  
         chatMessages.scrollTop = chatMessages.scrollHeight;
       });
   }

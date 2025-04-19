@@ -4,7 +4,9 @@ const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
+const uploadRoutes = require('./routes/uploadRoutes');
 
+app.use(uploadRoutes);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'dating-app', 'public')));
@@ -34,6 +36,9 @@ app.get('/matching.html', (req, res) => {
 app.get('/swipe', (req, res) => {
   res.sendFile(path.join(__dirname, 'dating-app', 'public', 'swipe.html'));
 });
+app.get('/swipecard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dating-app', 'public', 'swipecard.html'));
+});
 
 
 // Use routes
@@ -53,7 +58,7 @@ const swipeRoutes = require('./routes/swipeRoutes');
 app.use(swipeRoutes);
 
 //Use Message Routes
-const messageRoutes = require('./routes/messageRoutes');
+const messageRoutes = require('./routes/messageRoutes.js');
 app.use(messageRoutes);
 
 // Start server

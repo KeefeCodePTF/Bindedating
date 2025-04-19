@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/pages/profile.css" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
@@ -23,127 +24,120 @@
     </div>
 
     <form onsubmit="saveAndNext(event)">
-
       <div class="user-info-box">
         <h3>User Info</h3>
         <p><strong>Name:</strong> <span id="display-name"></span></p>
         <p><strong>Email:</strong> <span id="display-email"></span></p>
-        <p><strong>Password:</strong> <span id="display-password"></span></p>
+        <p><strong>Password:</strong> <span id="display-password">••••••••</span></p>
         <p><strong>ID:</strong> <span id="display-id"></span></p>
       </div>
 
-    <div class="form-section">
-      <label>Profile Description</label>
-      <div class="textarea-wrapper">
-        <textarea maxlength="1000" name="description" oninput="updateCounter(this)"></textarea>
-        <div class="char-counter">0 / 1000</div>
+      <div class="form-section">
+        <label>Profile Description</label>
+        <div class="textarea-wrapper">
+          <textarea maxlength="1000" name="description" oninput="updateCounter(this)"></textarea>
+          <div class="char-counter">0 / 1000</div>
+        </div>
       </div>
-    </div>
-  
-    <div class="form-section">
-      <label>Relationship Goals</label>
-      <div class="textarea-wrapper">
-        <textarea maxlength="1000" name="relationshipGoals" oninput="updateCharCount(this)"></textarea>
-        <div class="char-counter">0 / 1000</div>
-      </div>
-    </div>
 
-    <div class="form-section">
-      <label>Hard Limits</label>
-      <div class="textarea-wrapper">
-        <textarea maxlength="1000" name="hardLimits" oninput="updateCharCount(this)"></textarea>
-        <div class="char-counter">0 / 1000</div>
+      <div class="form-section">
+        <label>Relationship Goals</label>
+        <div class="textarea-wrapper">
+          <textarea maxlength="1000" name="relationshipGoals" oninput="updateCounter(this)"></textarea>
+          <div class="char-counter">0 / 1000</div>
+        </div>
       </div>
-    </div>
-  
-    <div class="form-section">
-      <label>Soft Limits</label>
-      <div class="textarea-wrapper">
-        <textarea maxlength="1000" name="softLimits" oninput="updateCharCount(this)"></textarea>
-        <div class="char-counter">0 / 1000</div>
+
+      <div class="form-section">
+        <label>Hard Limits</label>
+        <div class="textarea-wrapper">
+          <textarea maxlength="1000" name="hardLimits" oninput="updateCounter(this)"></textarea>
+          <div class="char-counter">0 / 1000</div>
+        </div>
       </div>
-    </div>
-    <div class="form-section">
-      <button class="submit-btn" type="submit">Next</button>
-    </div>
+
+      <div class="form-section">
+        <label>Soft Limits</label>
+        <div class="textarea-wrapper">
+          <textarea maxlength="1000" name="softLimits" oninput="updateCounter(this)"></textarea>
+          <div class="char-counter">0 / 1000</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <button class="submit-btn" type="submit">Next</button>
+      </div>
     </form>
+  </div>
 
-<script>
-function saveAndNext(event) {
-  event.preventDefault();
+  <script>
+    function saveAndNext(event) {
+      event.preventDefault();
 
-  const formData = new FormData(document.querySelector(".profile-form-container")); // ✅ select whole container
+      const formData = new FormData(document.querySelector("form"));
+      const profileData = {};
+      for (let [key, value] of formData.entries()) {
+        profileData[key] = value;
+      }
 
-  const profileData = {};
-  for (let [key, value] of formData.entries()) {
-    profileData[key] = value;
-  }
+      profileData.email = document.getElementById('email').value;
+      profileData.name = document.getElementById('display-name').textContent;
+      profileData.id = document.getElementById('display-id').textContent;
 
-  profileData.email = document.getElementById('email').value; // ✅ manually grab readonly field
-
-  sessionStorage.setItem('profileStep1', JSON.stringify(profileData));
-  window.location.href = '/matching.html';
-}
-</script>
-
-<script>
-  function updateCounter(textarea) {
-    const counter = textarea.nextElementSibling;
-    const maxLength = textarea.getAttribute("maxlength");
-    counter.textContent = `${textarea.value.length} / ${maxLength}`;
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".textarea-wrapper textarea").forEach(textarea => {
-      // Initial update
-      updateCounter(textarea);
-
-      // Attach event listener to update on input
-      textarea.addEventListener("input", () => updateCounter(textarea));
-    });
-  });
-</script>
-
-<script>
-  function handleMediaUpload(event) {
-    const files = Array.from(event.target.files).slice(0, 3); // Max 3
-    const previewContainer = document.getElementById("preview-container");
-    previewContainer.innerHTML = ""; // Clear previous previews
-
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        let preview;
-        if (file.type.startsWith("image/")) {
-          preview = document.createElement("img");
-          preview.src = e.target.result;
-        } else if (file.type.startsWith("video/")) {
-          preview = document.createElement("video");
-          preview.src = e.target.result;
-          preview.controls = true;
-        }
-
-        previewContainer.appendChild(preview);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(sessionStorage.getItem("userSignup"));
-    if (user) {
-      // You can display email as read-only or hidden
-      const emailField = document.createElement('input');
-      emailField.type = 'hidden';
-      emailField.id = 'email';
-      emailField.value = user.email;
-      document.body.appendChild(emailField);
-
-      // You could also pre-fill their name if you show it
+      sessionStorage.setItem('profileStep1', JSON.stringify(profileData));
+      window.location.href = '/matching.html';
     }
-  });
-</script>
 
-<script src="/js/errorHandler.js"></script>
+    function updateCounter(textarea) {
+      const counter = textarea.nextElementSibling;
+      const maxLength = textarea.getAttribute("maxlength");
+      counter.textContent = `${textarea.value.length} / ${maxLength}`;
+    }
+
+    function handleMediaUpload(event) {
+      const files = Array.from(event.target.files).slice(0, 3);
+      const previewContainer = document.getElementById("preview-container");
+      previewContainer.innerHTML = "";
+
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          let preview;
+          if (file.type.startsWith("image/")) {
+            preview = document.createElement("img");
+            preview.src = e.target.result;
+          } else if (file.type.startsWith("video/")) {
+            preview = document.createElement("video");
+            preview.src = e.target.result;
+            preview.controls = true;
+          }
+          previewContainer.appendChild(preview);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(sessionStorage.getItem("userSignup"));
+      if (user) {
+        document.getElementById("display-name").textContent = user.name || "";
+        document.getElementById("display-email").textContent = user.email || "";
+        document.getElementById("display-id").textContent = user.id || "";
+
+        const emailField = document.createElement('input');
+        emailField.type = 'hidden';
+        emailField.id = 'email';
+        emailField.value = user.email;
+        document.querySelector("form").appendChild(emailField);
+      }
+
+      document.querySelectorAll(".textarea-wrapper textarea").forEach(textarea => {
+        updateCounter(textarea);
+        textarea.addEventListener("input", () => updateCounter(textarea));
+      });
+    });
+  </script>
+
+  <script src="/js/errorHandler.js"></script>
+</body>
+</html>

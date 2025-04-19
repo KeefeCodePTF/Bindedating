@@ -5,12 +5,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/pages/signup.css" />
   <title>Signup</title>
 </head>
 <body>
   <div class="form-container">
     <form onsubmit="signup(event)">
       <h1>Signup</h1>
+
+      <div class="upload-section">
+        <label for="media-upload" class="upload-button">Upload</label>
+        <input
+          type="file"
+          id="media-upload"
+          accept="image/*,video/*"
+          multiple
+          style="display: none"
+          onchange="handleMediaUpload(event)"
+        />
+        <div class="upload-instructions">Upload up to 9 images/videos</div>
+        <div class="preview-grid" id="preview-container"></div>
+      </div>
 
       <div class="form-group">
         <label for="name">Name</label>
@@ -23,9 +38,52 @@
       </div>
 
       <div class="form-group">
+        <label for="birthday">Birthday</label>
+        <input type="date" id="birthday" name="birthday" required />
+      </div>
+
+      <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Your password" required />
       </div>
+
+      <label>I am a</label>
+      <div class="mcq-group" id="gender">
+        <div class="mcq-option" data-value="Man" onclick="selectOption('gender', 'Man', false)">Man</div>
+        <div class="mcq-option" data-value="Woman" onclick="selectOption('gender', 'Woman', false)">Woman</div>
+        <div class="mcq-option" data-value="Couple" onclick="selectOption('gender', 'Couple', false)">Couple</div>
+      </div>
+      <input type="hidden" name="gender" id="gender">
+
+      <label>Show me</label>
+      <div class="mcq-group" id="attraction">
+        <div class="mcq-option" data-value="Men" onclick="selectOption('attraction', 'Men', true)">Men</div>
+        <div class="mcq-option" data-value="Women" onclick="selectOption('attraction', 'Women', true)">Women</div>
+        <div class="mcq-option" data-value="Couples" onclick="selectOption('attraction', 'Couples', true)">Couples</div>
+      </div>
+      <input type="hidden" name="attraction" id="attraction">
+
+      <label>My Role</label>
+      <div class="mcq-group" id="role">
+        <div class="mcq-option" data-value="Vanilla" onclick="selectOption('role', 'Vanilla', false)">Vanilla</div>
+        <div class="mcq-option" data-value="Dominant" onclick="selectOption('role', 'Dominant', false)">Dominant</div>
+        <div class="mcq-option" data-value="Submissive" onclick="selectOption('role', 'Submissive', false)">Submissive</div>
+        <div class="mcq-option" data-value="Switch" onclick="selectOption('role', 'Switch', false)">Switch</div>
+        <div class="mcq-option" data-value="Not sure yet" onclick="selectOption('role', 'Not sure yet', false)">Not sure yet</div>
+      </div>
+      <input type="hidden" name="role" id="role">
+
+      <label>Interests</label>
+      <div class="mcq-group" id="interests">
+        <div class="mcq-option" data-value="Vanilla" onclick="selectOption('interests', 'Vanilla', true)">Vanilla</div>
+        <div class="mcq-option" data-value="Dominants" onclick="selectOption('interests', 'Dominants', true)">Dominants</div>
+        <div class="mcq-option" data-value="Submissives" onclick="selectOption('interests', 'Submissives', true)">Submissives</div>
+        <div class="mcq-option" data-value="Switches" onclick="selectOption('interests', 'Switches', true)">Switches</div>
+        <div class="mcq-option" data-value="24/7 Lifestyle" onclick="selectOption('interests', '24/7 Lifestyle', true)">24/7 Lifestyle</div>
+        <div class="mcq-option" data-value="Online Only" onclick="selectOption('interests', 'Online Only', true)">Online Only</div>
+        <div class="mcq-option" data-value="Not sure yet" onclick="selectOption('interests', 'Not sure yet', true)">Not sure yet</div>
+      </div>
+      <input type="hidden" name="interests" id="interests">
 
       <button type="submit">Sign Up</button>
     </form>
@@ -59,8 +117,6 @@
       });
     }
   </script>
-</body>
-</html>
 
 <script>
 navigator.geolocation.getCurrentPosition(pos => {
@@ -72,3 +128,80 @@ navigator.geolocation.getCurrentPosition(pos => {
 </script>
 
 <script src="/js/errorHandler.js"></script>
+
+<script>
+  function selectOption(groupName, value, isMulti = false) {
+    const group = document.querySelector(`.mcq-group#${groupName}`);
+    const options = group.querySelectorAll('.mcq-option');
+
+    if (!isMulti) {
+      options.forEach(opt => opt.classList.remove('selected'));
+    }
+
+    const clickedOption = [...options].find(opt => opt.dataset.value === value);
+    if (!clickedOption) return;
+
+    if (isMulti) {
+      clickedOption.classList.toggle('selected');
+    } else {
+      clickedOption.classList.add('selected');
+    }
+
+    // Gather selected values
+    const selected = [...options]
+      .filter(opt => opt.classList.contains('selected'))
+      .map(opt => opt.dataset.value);
+
+    // Store them in the hidden input
+    const hiddenInput = document.getElementById(groupName);
+    if (hiddenInput) {
+      hiddenInput.value = selected.join(',');
+    }
+  }
+</script>
+
+<script>
+  let uploadedFiles = [];
+
+  function handleMediaUpload(event) {
+    const files = Array.from(event.target.files).slice(0, 9);
+    const previewContainer = document.getElementById("preview-container");
+    previewContainer.innerHTML = "";
+    uploadedFiles = []; // reset
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("media-wrapper");
+
+        let media;
+        if (file.type.startsWith("image/")) {
+          media = document.createElement("img");
+        } else if (file.type.startsWith("video/")) {
+          media = document.createElement("video");
+          media.controls = true;
+        }
+        media.src = e.target.result;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "✕";
+        removeBtn.classList.add("remove-btn");
+        removeBtn.onclick = () => {
+          wrapper.remove();
+          uploadedFiles = uploadedFiles.filter((_, i) => i !== index);
+        };
+
+        wrapper.appendChild(media);
+        wrapper.appendChild(removeBtn);
+        previewContainer.appendChild(wrapper);
+
+        uploadedFiles.push(file);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+</body>
+</html>

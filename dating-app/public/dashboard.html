@@ -1,39 +1,52 @@
-<!-- public/dashboard.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<link rel="stylesheet" href="/css/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binded Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/pages/dashboard.css" />
+</head>
 <body>
   <div class="dashboard-container">
-    <div class="welcome-info">
-      <h1 id="welcome">Welcome!</h1>
-      <p id="emailDisplay">Email: </p>
-      <div class="nav-links">
-        <a href="/profile">Create/Edit Profile</a>
-        <a href="/">Back to Home</a>
+    <!-- LEFT PANEL: Matches -->
+    <div class="matches-panel">
+      <h2>Your Matches</h2>
+      <div id="matches-container" class="matches-list">
+        <p class="no-matches-msg">No matches yet.</p>
       </div>
     </div>
 
-    <div id="card-container" class="card-stack"></div>
+    <!-- MIDDLE PANEL: Chat -->
+    <div class="chat-panel">
+      <div class="chat-box" id="chat-box">
+        <div id="chat-header" class="chat-header">Chat</div>
+        <div id="chat-messages" class="chat-messages"></div>
 
-    <form method="POST" action="/logout" class="logout-form">
-      <button type="submit" class="logout-btn">Logout</button>
-    </form>
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="Type a message..." required />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: User Info -->
+    <div class="user-panel">
+      <div class="welcome-info">
+        <h1 id="welcome">Welcome!</h1>
+        <p id="emailDisplay">Email: </p>
+        <div class="nav-links">
+          <a href="/profile">Create/Edit Profile</a>
+          <a href="/">Back to Home</a>
+        </div>
+        <form method="POST" action="/logout" class="logout-form">
+          <button type="submit" class="logout-btn">Logout</button>
+        </form>
+      </div>
+    </div>
   </div>
-  <h2>Your Matches</h2>
-  <div id="matches-container" class="matches-list"></div>
-  
-  <div id="chat-box" class="chat-box hidden">
-    <div id="chat-header" class="chat-header"></div>
-    <div id="chat-messages" class="chat-messages"></div>
-  
-    <form id="chat-form" class="chat-form">
-      <input type="text" id="chat-input" placeholder="Type a message..." required />
-      <button type="submit">Send</button>
-    </form>
-  </div>
+
+  <script src="/js/swipe.js"></script>
+  <script src="/js/chat.js"></script>
 </body>
 </html>
-
-<script src="/js/swipe.js"></script>
-<script src="/js/chat.js"></script>

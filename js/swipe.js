@@ -6,33 +6,42 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  fetch(`/matches/${user.email}`)
+  fetch(`/potential-matches/${user.email}`)
     .then(res => res.json())
     .then(matches => {
       const container = document.getElementById('card-container');
       container.innerHTML = '';
 
       if (!matches.length) {
-        container.innerHTML = "<p>No matches found.</p>";
+        container.innerHTML = "<p class='no-matches-msg'>Nobody in your area.</p>";
         return;
       }
 
       matches.forEach(match => {
         const card = document.createElement('div');
         card.className = 'swipe-card';
-        card.dataset.userid = match.id; // ✅ Required for swipe tracking
+        card.dataset.userid = match.id;
 
         card.innerHTML = `
-          <h3>${match.profile.name}</h3>
-          <p><strong>Gender:</strong> ${match.profile.gender}</p>
-          <p><strong>Role:</strong> ${match.profile.role}</p>
-          <p><strong>Bio:</strong> ${match.profile.description}</p>
+          <div class="swipe-media">
+            <img src="${match.profile.media?.[0] || '/img/placeholder.jpg'}" alt="${match.profile.name}'s media">
+          </div>
+          <div class="swipe-info">
+            <h3>${match.profile.name}, ${match.profile.age || '?'}</h3>
+            <p><strong>${match.profile.role}</strong> • ${match.distance || '?'} miles away</p>
+            <p class="bio">${match.profile.description || ''}</p>
+          </div>
+          <div class="icon-label">
+            <i class="fas fa-times pass-icon" data-direction="pass"></i>
+            <i class="fas fa-heart like-icon" data-direction="like"></i>
+          </div>
         `;
 
         container.appendChild(card);
       });
 
       enableSwiping();
+      setupIconButtons();
     });
 });
 
@@ -73,16 +82,29 @@ function enableSwiping() {
       currentX = 0;
     };
 
-    // Mouse events
     card.addEventListener('mousedown', e => handleGestureStart(e.clientX));
     card.addEventListener('mousemove', e => handleGestureMove(e.clientX));
     card.addEventListener('mouseup', handleGestureEnd);
     card.addEventListener('mouseleave', () => { if (isDragging) handleGestureEnd(); });
 
-    // Touch events
     card.addEventListener('touchstart', e => handleGestureStart(e.touches[0].clientX));
     card.addEventListener('touchmove', e => handleGestureMove(e.touches[0].clientX));
     card.addEventListener('touchend', handleGestureEnd);
+  });
+}
+
+function setupIconButtons() {
+  document.querySelectorAll('.like-icon, .pass-icon').forEach(icon => {
+    icon.addEventListener('click', (e) => {
+      const card = e.target.closest('.swipe-card');
+      const direction = e.target.dataset.direction;
+
+      card.style.transform = `translateX(${direction === 'like' ? 1000 : -1000}px) rotate(${direction === 'like' ? 15 : -15}deg)`;
+      setTimeout(() => {
+        card.remove();
+        handleSwipeResult(direction, card);
+      }, 300);
+    });
   });
 }
 
@@ -96,6 +118,5 @@ function handleSwipeResult(direction, card) {
     body: JSON.stringify({ email: user.email, targetId, direction })
   });
 
-  // You could show feedback here
   console.log(`${direction.toUpperCase()} → ${card.querySelector('h3')?.textContent}`);
 }

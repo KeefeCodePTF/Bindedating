@@ -14,6 +14,8 @@
 @import './form.css';
 
 /* 5. Page-specific styles */
+@import './pages/signup.css';
 @import './pages/dashboard.css';
 @import './pages/profile.css';
 @import './pages/matching.css';
+@import './pages/swipe.css';

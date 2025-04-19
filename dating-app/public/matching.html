@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pages/matching.css" />
     <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Matching Preferences</title>
@@ -37,15 +38,6 @@
   <form onsubmit="combineAndSubmit(event)">
 
     <div class="form-section">
-      <label>I am a...</label>
-      <div class="radio-options">
-        <label><input type="radio" name="gender" value="Man"> Man</label>
-        <label><input type="radio" name="gender" value="Woman"> Woman</label>
-        <label><input type="radio" name="gender" value="Couple"> Couple</label>
-      </div>
-    </div>
-  
-    <div class="form-section">
       <label>My Role</label>
       <div class="radio-options">
         <label><input type="radio" name="role" value="Dom"> Dominant</label>
@@ -55,6 +47,10 @@
       </div>
     </div>
 
+
+    <input type="hidden" name="gender" id="gender">
+
+    
 
     <label>Show me...</label>
     <div class="mcq-group mcq-attraction">
@@ -73,17 +69,6 @@
       </select>
     </div>
 
-    <label>I'm interested in...</label>
-    <div class="mcq-group mcq-interests">
-      <div class="mcq-option" data-value="Vanilla" onclick="selectOption('interests', 'Vanilla', true)">Vanilla</div>
-      <div class="mcq-option" data-value="Dominants" onclick="selectOption('interests', 'Dominants', true)">Dominants</div>
-      <div class="mcq-option" data-value="Submissives" onclick="selectOption('interests', 'Submissives', true)">Submissives</div>
-      <div class="mcq-option" data-value="Switch" onclick="selectOption('interests', 'Switch', true)">Switch</div>
-      <div class="mcq-option" data-value="24/7 lifestyle" onclick="selectOption('interests', '24/7 lifestyle', true)">24/7 lifestyle</div>
-      <div class="mcq-option" data-value="Online only" onclick="selectOption('interests', 'Online only', true)">Online only</div>
-      <div class="mcq-option" data-value="Still exploring / Curious" onclick="selectOption('interests', 'Still exploring / Curious', true)">Still exploring / Curious</div>
-    </div>
-    <input type="hidden" name="interests" id="interests">
 
     <form onsubmit="combineAndSubmit(event)">
       <!-- … -->
