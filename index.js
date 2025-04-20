@@ -44,7 +44,7 @@ app.use(authRoutes);
 
 // Use profileRoutes
 const profileRoutes = require('./routes/profileRoutes');
-app.use(profileRoutes);
+app.use('/profile', profileRoutes); 
 
 // User matchRoutes
 const matchRoutes = require('./routes/matchRoutes');
@@ -54,13 +54,40 @@ app.use(matchRoutes);
 const swipeRoutes = require('./routes/swipeRoutes');
 app.use(swipeRoutes);
 
-//Use Upload Routes
-const uploadRoutes = require('./routes/uploadRoutes.js');
-app.use(uploadRoutes);
-
 //Use Message Routes
 const messageRoutes = require('./routes/messageRoutes.js');
 app.use(messageRoutes);
+
+// ✅ ROUTES LOADED (move this AFTER all app.use(...) calls)
+function printRoutes(router, prefix = '') {
+  if (!router || !router.stack) {
+    console.log('⚠️  No routes found in this router.');
+    return;
+  }
+
+  router.stack.forEach(layer => {
+    if (layer.route && layer.route.path) {
+      const methods = Object.keys(layer.route.methods)
+        .map(m => m.toUpperCase())
+        .join(', ');
+      console.log(`➡️  ${methods} ${prefix}${layer.route.path}`);
+    } else if (layer.name === 'router' && layer.handle && layer.handle.stack) {
+      const path = layer.regexp?.source
+        ?.replace('^\\/', '/')
+        .replace('\\/?(?=\\/|$)', '')
+        .replace(/\\\//g, '/')
+        .replace(/\$$/, '') || '';
+      printRoutes(layer.handle, prefix + path);
+    }
+  });
+}
+
+// Start server
+app.listen(PORT, () => {
+  console.log('\n✅ ROUTES LOADED:');
+  printRoutes(app._router);
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+});
 
 // Start server
 app.listen(PORT, () => {
