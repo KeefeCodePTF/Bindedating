@@ -30,9 +30,6 @@ app.get('/dashboard', (req, res) => {
 app.get('/profile', (req, res) => {
   res.sendFile(path.join(__dirname, 'dating-app', 'public', 'profile.html'));
 });
-app.get('/matching.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dating-app', 'public', 'matching.html'));
-});
 app.get('/swipe', (req, res) => {
   res.sendFile(path.join(__dirname, 'dating-app', 'public', 'swipe.html'));
 });

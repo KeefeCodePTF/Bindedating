@@ -26,6 +26,32 @@ body {
     font-size: 2rem;
     margin-bottom: 30px;
   }
+
+  .form-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 30px; /* space inside the yellow box */
+    box-sizing: border-box;
+  }
+  
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .back-arrow {
+    position: absolute;
+    left: 0;
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: #ffde59;
+    padding-left: 10px;
+  }
   
   .upload-section {
     text-align: center;

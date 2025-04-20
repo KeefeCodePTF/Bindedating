@@ -8,7 +8,9 @@
 </head>
 <body>
   <div class="profile-form-container">
-    <h1>Create Your Binded Dating Profile</h1>
+    <div class="form-header">
+      <h1>Your Profile</h1>
+    </div>
     <div class="upload-section">
       <label for="media-upload" class="upload-button">Upload</label>
       <input
@@ -27,9 +29,44 @@
       <div class="user-info-box">
         <h3>User Info</h3>
         <p><strong>Name:</strong> <span id="display-name"></span></p>
+        <p><strong>ID:</strong> <span id="display-id"></span></p>
+        <p><strong>Current location:</strong> <span id="display-location"></span></p>
+        <p><strong>Age:</strong> <span id="display-age"></span></p>
         <p><strong>Email:</strong> <span id="display-email"></span></p>
         <p><strong>Password:</strong> <span id="display-password">••••••••</span></p>
-        <p><strong>ID:</strong> <span id="display-id"></span></p>
+      </div>
+
+      <div class="form-section">
+        <label>
+          Show me people within 
+          <span class="slider-label-value">50</span>
+          <select name="distanceUnit" class="dropdown inline-dropdown">
+            <option value="km">km</option>
+            <option value="miles">miles</option>
+          </select>
+        </label>
+      
+        <div class="slider-row">
+          <input type="range" name="distance" min="5" max="200" value="20" class="range-slider" oninput="updateSliderValue(this)">
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <label>
+          Show me profiles <span class="slider-label-value">5</span> years older
+        </label>
+        <div class="inline slider-row">
+          <input type="range" name="maxOlder" min="0" max="30" value="5" class="range-slider" oninput="updateSliderValue(this)">
+        </div>
+      </div>
+      
+      <div class="form-section">
+        <label>
+          Show me profiles <span class="slider-label-value">5</span> years younger
+        </label>
+        <div class="inline slider-row">
+          <input type="range" name="maxYounger" min="0" max="30" value="5" class="range-slider" oninput="updateSliderValue(this)">
+        </div>
       </div>
 
       <div class="form-section">
@@ -49,7 +86,7 @@
       </div>
 
       <div class="form-section">
-        <label>Hard Limits</label>
+        <label>Limits</label>
         <div class="textarea-wrapper">
           <textarea maxlength="1000" name="hardLimits" oninput="updateCounter(this)"></textarea>
           <div class="char-counter">0 / 1000</div>
@@ -57,15 +94,7 @@
       </div>
 
       <div class="form-section">
-        <label>Soft Limits</label>
-        <div class="textarea-wrapper">
-          <textarea maxlength="1000" name="softLimits" oninput="updateCounter(this)"></textarea>
-          <div class="char-counter">0 / 1000</div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <button class="submit-btn" type="submit">Next</button>
+        <button class="submit-btn" type="submit">Save</button>
       </div>
     </form>
   </div>
@@ -139,5 +168,26 @@
   </script>
 
   <script src="/js/errorHandler.js"></script>
+
+<script>
+function updateSliderValue(slider) {
+  const container = slider.closest('.form-section');
+  const span = container.querySelector('.slider-label-value');
+  if (span) {
+    span.textContent = slider.value;
+  }
+}
+</script>
+
+<script>
+  function updateSliderValue(slider) {
+  const container = slider.closest('.form-section');
+  const span = container.querySelector('.slider-label-value');
+  if (span) {
+    span.textContent = slider.value;
+  }
+}
+</script>
+
 </body>
 </html>

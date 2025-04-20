@@ -14,7 +14,7 @@ html, body {
     max-width: 700px;
     margin: 40px auto;
     background-color: #1a1a1a;
-    padding: 40px;
+    padding: 40px 20px; 
     border-radius: 12px;
     color: white;
     display: flex;
@@ -29,6 +29,22 @@ html, body {
     text-align: center;
     margin-bottom: 10px;
   }
+
+  .form-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .form-header h1 {
+    font-size: 1.8rem;
+    color: #ffde59;
+    margin: 0;
+  }
+  
   
   /* Upload section */
   .upload-section {
@@ -81,11 +97,98 @@ html, body {
   
   /* Form groups (radios/textareas) */
   .form-section {
-    width: 90vw; /* or 80vw if you want it slightly smaller */
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
   }
   
+  .user-info-box {
+    background-color: #000;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+    color: #fff;
+    text-align: left; /* aligns all text inside left */
+    max-width: 600px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .user-info-box h3 {
+    margin-top: 0;
+    color: #ffde59; /* light blue for section title */
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  .user-info-box p {
+    margin: 10px 0;
+    font-size: 1rem;
+  }
+  
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  
+  .range-slider {
+    flex-grow: 1;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #ffde59;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .range-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #ffde59;
+    cursor: pointer;
+  }
+  
+  .range-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #ffde59;
+    cursor: pointer;
+  }
+  
+  .slider-value {
+    color: #ffde59;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+  }
+  
+  .dropdown {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #ffde59;
+    font-size: 1rem;
+  }
+
+  .inline-dropdown {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 1rem;
+    padding: 4px 8px;
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #ffde59;
+    border-radius: 6px;
+  }
+
   .form-section label {
     display: block;
     font-weight: bold;
@@ -101,7 +204,7 @@ html, body {
   }
   
   textarea {
-    width: 35vw;              /* Responsive width: 90% of the viewport width */
+    width: 100%;              /* Responsive width: 90% of the viewport width */
     max-width: 1200px;        /* Hard limit to avoid it stretching too far */
     min-height: 120px;        /* Vertical height stays the same */
     margin: 0 auto 20px;      /* Center horizontally and add spacing below */
@@ -118,11 +221,10 @@ html, body {
     }
 
     .textarea-wrapper {
-        position: relative;
-        width: 35vw;
-        max-width: 1200px;
-        margin: 0 auto 30px;
-      }
+      position: relative;
+      width: 100%;
+      margin-bottom: 30px;
+    }
       
       .textarea-wrapper textarea {
         width: 100%;
