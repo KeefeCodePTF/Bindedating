@@ -92,35 +92,6 @@
     </form>
   </div>
 
-  <script>
-    function signup(event) {
-      event.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      fetch("/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password })
-      })
-      .then(res => {
-  if (res.ok) {
-    // Save user info for later use in profile
-    sessionStorage.setItem("userSignup", JSON.stringify({ name, email, password }));
-    window.location.href = "/profile.html";
-        } else {
-          return res.text().then(text => alert("Signup failed: " + text));
-        }
-      })
-      .catch(err => {
-        console.error("Signup error:", err);
-        alert("An error occurred.");
-      });
-    }
-  </script>
-
 <script>
 navigator.geolocation.getCurrentPosition(pos => {
   localStorage.setItem('location', JSON.stringify({
@@ -129,8 +100,6 @@ navigator.geolocation.getCurrentPosition(pos => {
   }));
 });
 </script>
-
-<script src="/js/errorHandler.js"></script>
 
 <script>
   function selectOption(groupName, value, isMulti = false) {
@@ -205,6 +174,45 @@ navigator.geolocation.getCurrentPosition(pos => {
     });
   }
 </script>
+
+<script>
+  function signup(event) {
+  event.preventDefault();
+
+  const formData = new FormData();
+
+  // Text inputs
+  formData.append("name", document.getElementById("name").value);
+  formData.append("email", document.getElementById("email").value);
+  formData.append("password", document.getElementById("password").value);
+  formData.append("birthday", document.getElementById("birthday").value);
+  formData.append("gender", document.getElementById("gender").value);
+  formData.append("attraction", document.getElementById("attraction").value);
+  formData.append("role", document.getElementById("role").value);
+  formData.append("interests", document.getElementById("interests").value);
+
+  // Media files
+  uploadedFiles.forEach((file, index) => {
+    formData.append("media", file);
+  });
+
+  fetch("/profile/initial", {
+    method: "POST",
+    body: formData,
+  }).then(res => {
+    if (res.ok) {
+      window.location.href = "/profile.html";
+    } else {
+      res.text().then(msg => alert("Signup failed: " + msg));
+    }
+  }).catch(err => {
+    console.error("Signup error:", err);
+    alert("An error occurred.");
+  });
+}
+</script>
+
+<script src="/js/errorHandler.js"></script>
 
 </body>
 </html>

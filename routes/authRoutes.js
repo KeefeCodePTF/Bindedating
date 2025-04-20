@@ -4,8 +4,7 @@ const bcrypt = require('bcrypt');
 
 const { isValidName, isValidPassword } = require('../utils/validators');
 const { readUsers, writeUsers } = require('../utils/fileHandler');
-
-const generateUserId = () => `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+const { generateUserId } = require('../utils/idGenerator');
 
 // ✅ SIGNUP ROUTE
 router.post('/signup', async (req, res) => {

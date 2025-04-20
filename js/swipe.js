@@ -2,8 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
   if (!user) {
     alert("You must log in first.");
-    window.location.href = "/login";
-    return;
+    return (window.location.href = "/login");
   }
 
   fetch(`/potential-matches/${user.email}`)
@@ -17,53 +16,62 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      matches.forEach(match => {
-        const card = document.createElement('div');
-        card.className = 'swipe-card';
-        card.dataset.userid = match.id;
-
-        card.innerHTML = `
-          <div class="swipe-media">
-            <img src="${match.profile.media?.[0] || '/img/placeholder.jpg'}" alt="${match.profile.name}'s media">
-          </div>
-          <div class="swipe-info">
-            <h3>${match.profile.name}, ${match.profile.age || '?'}</h3>
-            <p><strong>${match.profile.role}</strong> • ${match.distance || '?'} miles away</p>
-            <p class="bio">${match.profile.description || ''}</p>
-          </div>
-          <div class="icon-label">
-            <i class="fas fa-times pass-icon" data-direction="pass"></i>
-            <i class="fas fa-heart like-icon" data-direction="like"></i>
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-
+      matches.forEach(renderSwipeCard);
       enableSwiping();
       setupIconButtons();
+    })
+    .catch(err => {
+      console.error("Error fetching matches:", err);
+      container.innerHTML = "<p>Error loading matches.</p>";
     });
 });
 
+// Renders a single user into a swipe card
+function renderSwipeCard(user) {
+  const container = document.getElementById('card-container');
+
+  const card = document.createElement('div');
+  card.className = 'swipe-card';
+  card.dataset.userid = user.id;
+
+  card.innerHTML = `
+    <div class="swipe-media">
+      <img src="${user.profile.media?.[0] || '/img/placeholder.jpg'}" alt="${user.profile.name}'s media">
+    </div>
+    <div class="swipe-info">
+      <h3>${user.profile.name}, ${user.profile.age || '?'}</h3>
+      <p><strong>${user.profile.role || ''}</strong> • ${user.distance || '?'} km away</p>
+      <p class="bio">${user.profile.description || ''}</p>
+    </div>
+    <div class="icon-label">
+      <i class="fas fa-times pass-icon" data-direction="pass"></i>
+      <i class="fas fa-heart like-icon" data-direction="like"></i>
+    </div>
+  `;
+
+  container.appendChild(card);
+}
+
+// Handles swiping logic via drag gestures
 function enableSwiping() {
   const cards = document.querySelectorAll('.swipe-card');
 
   cards.forEach(card => {
     let startX = 0, currentX = 0, isDragging = false;
 
-    const handleGestureStart = (x) => {
+    const start = (x) => {
       isDragging = true;
       startX = x;
       card.style.transition = 'none';
     };
 
-    const handleGestureMove = (x) => {
+    const move = (x) => {
       if (!isDragging) return;
       currentX = x - startX;
       card.style.transform = `translateX(${currentX}px) rotate(${currentX * 0.05}deg)`;
     };
 
-    const handleGestureEnd = () => {
+    const end = () => {
       if (!isDragging) return;
       isDragging = false;
       card.style.transition = 'transform 0.3s ease';
@@ -82,17 +90,18 @@ function enableSwiping() {
       currentX = 0;
     };
 
-    card.addEventListener('mousedown', e => handleGestureStart(e.clientX));
-    card.addEventListener('mousemove', e => handleGestureMove(e.clientX));
-    card.addEventListener('mouseup', handleGestureEnd);
-    card.addEventListener('mouseleave', () => { if (isDragging) handleGestureEnd(); });
+    card.addEventListener('mousedown', e => start(e.clientX));
+    card.addEventListener('mousemove', e => move(e.clientX));
+    card.addEventListener('mouseup', end);
+    card.addEventListener('mouseleave', () => isDragging && end());
 
-    card.addEventListener('touchstart', e => handleGestureStart(e.touches[0].clientX));
-    card.addEventListener('touchmove', e => handleGestureMove(e.touches[0].clientX));
-    card.addEventListener('touchend', handleGestureEnd);
+    card.addEventListener('touchstart', e => start(e.touches[0].clientX));
+    card.addEventListener('touchmove', e => move(e.touches[0].clientX));
+    card.addEventListener('touchend', end);
   });
 }
 
+// For tapping icons (like/pass)
 function setupIconButtons() {
   document.querySelectorAll('.like-icon, .pass-icon').forEach(icon => {
     icon.addEventListener('click', (e) => {
@@ -108,6 +117,7 @@ function setupIconButtons() {
   });
 }
 
+// Sends swipe data to backend
 function handleSwipeResult(direction, card) {
   const user = JSON.parse(localStorage.getItem('loggedInUser'));
   const targetId = card.dataset.userid;

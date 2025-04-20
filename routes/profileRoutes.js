@@ -2,105 +2,132 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const router = express.Router();
-const fileHandler = require('../utils/fileHandler');
 const multer = require('multer');
+const router = express.Router();
+
 const upload = multer({ dest: 'public/uploads/' });
-
-router.post('/upload', upload.single('profilePic'), (req, res) => {
-  // Save `req.file.filename` in user profile
-});
-
 const usersFilePath = path.join(__dirname, '..', 'users.json');
 
-// Helper to generate unique user ID
-function generateUserId() {
-  return `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-}
+const { generateUserId } = require('../utils/idGenerator');
+const { reverseGeocode } = require('../utils/locationService');
 
-// POST to update profile for existing user
-router.post('/profile', async (req, res) => {
-  const { profile, matching, password } = req.body;
+// 🟡 POST /profile/initial – handles signup.html submissions
+router.post('/initial', upload.array('media', 9), async (req, res) => {
+  const { name, email, password, birthday, gender, attraction, role, interests } = req.body;
 
-  if (!profile || !profile.email) {
-    return res.status(400).send('Missing profile or email.');
+  if (!name || !email || !password || !birthday) {
+    return res.status(400).send('Missing required fields.');
   }
 
   try {
-    // Read existing users
-    let users = [];
-    if (fs.existsSync(usersFilePath)) {
-      const rawData = fs.readFileSync(usersFilePath, 'utf-8');
-      users = JSON.parse(rawData);
+    const users = fs.existsSync(usersFilePath)
+      ? JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'))
+      : [];
+
+    if (users.find(u => u.profile?.email === email)) {
+      return res.status(400).send('Email already registered.');
     }
 
-    // Try to find existing user by email (stored in profile.email)
-    let user = users.find(u => u.profile?.email === profile.email);
+    const newUser = {
+      id: generateUserId(),
+      profile: {
+        name,
+        email,
+        birthday,
+        gender,
+        role,
+        attraction: attraction ? attraction.split(',') : [],
+        interests: interests ? interests.split(',') : [],
+        description: '',
+        relationshipGoals: '',
+        limits: ''
+      },
+      passwordHash: await bcrypt.hash(password, 10),
+      media: req.files?.map(f => f.filename) || [],
+      matching: {
+        maxDistance: 100,
+        distanceUnit: 'km',
+        maxOlder: 0,
+        maxYounger: 0
+      },
+      location: {
+        ip: req.ip || '',
+        lat: null,
+        lng: null,
+        city: ''
+      },
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString()
+    };
 
-    // If no existing user, create a new one
-    if (!user) {
-      user = {
-        id: generateUserId(),
-        profile: {
-          name: profile.name || '',
-          email: profile.email,
-          gender: '',
-          role: '',
-          description: '',
-          relationshipGoals: '',
-          softLimits: '',
-          hardLimits: ''
-        },
-        passwordHash: password ? await bcrypt.hash(password, 10) : '',
-        matching: {
-          "Show me": matching?.["Show me"] || [],
-          maxDistance: matching?.maxDistance || 1,
-          distanceUnit: matching?.distanceUnit || "km",
-          interests: matching?.interests || []
-        },
-        location: {
-          ip: req.ip || '',
-          lat: null,
-          lng: null
-        },
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString()
-      };
+    // Optional: Get user location from localStorage
+    const locationHeader = req.headers['x-user-location'];
+    if (locationHeader) {
+      const { lat, lng } = JSON.parse(locationHeader);
+      newUser.location.lat = lat;
+      newUser.location.lng = lng;
 
-      users.push(user);
+      // 🧠 Use reverse geocoding
+      reverseGeocode(lat, lng, (err, city) => {
+        if (!err && city) {
+          newUser.location.city = city;
+        }
+        users.push(newUser);
+        fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+        return res.status(200).send({ message: 'User created', userId: newUser.id });
+      });
     } else {
-      // Update existing profile (except email)
-      user.profile.name = profile.name || user.profile.name;
-      user.profile.gender = profile.gender || user.profile.gender;
-      user.profile.role = profile.role || user.profile.role;
-      user.profile.description = profile.description || user.profile.description;
-      user.profile.relationshipGoals = profile.relationshipGoals || user.profile.relationshipGoals;
-      user.profile.softLimits = profile.softLimits || user.profile.softLimits;
-      user.profile.hardLimits = profile.hardLimits || user.profile.hardLimits;
-
-      // Optional password update
-      if (password && password.trim().length > 0) {
-        user.passwordHash = await bcrypt.hash(password, 10);
-      }
-
-      // Matching settings
-      if (matching) {
-        user.matching["Show me"] = matching["Show me"] || user.matching["Show me"];
-        user.matching.maxDistance = matching.maxDistance || user.matching.maxDistance;
-        user.matching.distanceUnit = matching.distanceUnit || user.matching.distanceUnit;
-        user.matching.interests = matching.interests || user.matching.interests;
-      }
-
-      user.lastActiveAt = new Date().toISOString();
+      users.push(newUser);
+      fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+      return res.status(200).send({ message: 'User created', userId: newUser.id });
     }
 
-    // Save users back to file
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    res.status(200).send({ message: 'Profile saved successfully', userId: user.id });
+  } catch (err) {
+    console.error('❌ Error creating user:', err);
+    return res.status(500).send('Internal server error.');
+  }
+});
 
-  } catch (error) {
-    console.error('Error saving profile:', error);
-    res.status(500).send('Internal server error.');
+// 🟡 POST /profile/update – handles profile.html edits
+router.post('/update', async (req, res) => {
+  const {
+    email,
+    description,
+    relationshipGoals,
+    limits,
+    distance,
+    distanceUnit,
+    maxOlder,
+    maxYounger
+  } = req.body;
+
+  if (!email) return res.status(400).send('Missing email.');
+
+  try {
+    const users = fs.existsSync(usersFilePath)
+      ? JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'))
+      : [];
+
+    const user = users.find(u => u.profile?.email === email);
+    if (!user) return res.status(404).send('User not found.');
+
+    user.profile.description = description;
+    user.profile.relationshipGoals = relationshipGoals;
+    user.profile.limits = limits;
+
+    user.matching.maxDistance = parseInt(distance) || 100;
+    user.matching.distanceUnit = distanceUnit || 'km';
+    user.matching.maxOlder = parseInt(maxOlder) || 0;
+    user.matching.maxYounger = parseInt(maxYounger) || 0;
+
+    user.lastActiveAt = new Date().toISOString();
+
+    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+    return res.status(200).send({ message: 'Profile updated', userId: user.id });
+
+  } catch (err) {
+    console.error('❌ Error updating profile:', err);
+    return res.status(500).send('Internal server error.');
   }
 });
 

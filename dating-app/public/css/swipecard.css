@@ -12,6 +12,8 @@
   font-family: 'Segoe UI', sans-serif;
   transition: transform 0.3s ease;
   position: relative;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .media-section {
@@ -46,7 +48,7 @@
 
 .distance {
   font-size: 0.9rem;
-  color: #777;
+  color: #444; /* Or lighten to match dark bg */
 }
 
 .profile-role {
@@ -55,8 +57,9 @@
   color: #444;
 }
 
-.profile-more {
-  padding: 0 16px 16px 16px;
+.profile-more[open] {
+  border-top: 1px solid #eee;
+  margin-top: 10px;
   background-color: #fff;
 }
 
@@ -115,4 +118,9 @@
 
 .swipe-actions i:hover {
   transform: scale(1.2);
+}
+
+.swipe-card.swiping {
+  opacity: 0.85;
+  transform: scale(0.98);
 }

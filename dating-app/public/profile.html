@@ -88,7 +88,7 @@
       <div class="form-section">
         <label>Limits</label>
         <div class="textarea-wrapper">
-          <textarea maxlength="1000" name="hardLimits" oninput="updateCounter(this)"></textarea>
+          <textarea maxlength="1000" name="limits" oninput="updateCounter(this)"></textarea>
           <div class="char-counter">0 / 1000</div>
         </div>
       </div>
@@ -99,76 +99,12 @@
     </form>
   </div>
 
-  <script>
-    function saveAndNext(event) {
-      event.preventDefault();
 
-      const formData = new FormData(document.querySelector("form"));
-      const profileData = {};
-      for (let [key, value] of formData.entries()) {
-        profileData[key] = value;
-      }
 
-      profileData.email = document.getElementById('email').value;
-      profileData.name = document.getElementById('display-name').textContent;
-      profileData.id = document.getElementById('display-id').textContent;
-
-      sessionStorage.setItem('profileStep1', JSON.stringify(profileData));
-      window.location.href = '/matching.html';
-    }
-
-    function updateCounter(textarea) {
-      const counter = textarea.nextElementSibling;
-      const maxLength = textarea.getAttribute("maxlength");
-      counter.textContent = `${textarea.value.length} / ${maxLength}`;
-    }
-
-    function handleMediaUpload(event) {
-      const files = Array.from(event.target.files).slice(0, 3);
-      const previewContainer = document.getElementById("preview-container");
-      previewContainer.innerHTML = "";
-
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          let preview;
-          if (file.type.startsWith("image/")) {
-            preview = document.createElement("img");
-            preview.src = e.target.result;
-          } else if (file.type.startsWith("video/")) {
-            preview = document.createElement("video");
-            preview.src = e.target.result;
-            preview.controls = true;
-          }
-          previewContainer.appendChild(preview);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const user = JSON.parse(sessionStorage.getItem("userSignup"));
-      if (user) {
-        document.getElementById("display-name").textContent = user.name || "";
-        document.getElementById("display-email").textContent = user.email || "";
-        document.getElementById("display-id").textContent = user.id || "";
-
-        const emailField = document.createElement('input');
-        emailField.type = 'hidden';
-        emailField.id = 'email';
-        emailField.value = user.email;
-        document.querySelector("form").appendChild(emailField);
-      }
-
-      document.querySelectorAll(".textarea-wrapper textarea").forEach(textarea => {
-        updateCounter(textarea);
-        textarea.addEventListener("input", () => updateCounter(textarea));
-      });
-    });
-  </script>
-
+  <!-- use error handling js file value -->
   <script src="/js/errorHandler.js"></script>
 
+  <!-- Update age/distance slider value -->
 <script>
 function updateSliderValue(slider) {
   const container = slider.closest('.form-section');
@@ -180,13 +116,61 @@ function updateSliderValue(slider) {
 </script>
 
 <script>
-  function updateSliderValue(slider) {
-  const container = slider.closest('.form-section');
-  const span = container.querySelector('.slider-label-value');
-  if (span) {
-    span.textContent = slider.value;
+  async function saveAndNext(event) {
+    event.preventDefault();
+
+    const user = JSON.parse(sessionStorage.getItem("userSignup"));
+    if (!user || !user.email) {
+      alert("User session not found. Please log in again.");
+      return;
+    }
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    const updatePayload = {
+      email: user.email,
+      description: formData.get("description"),
+      relationshipGoals: formData.get("relationshipGoals"),
+      limits: formData.get("limits"),
+      distance: parseInt(formData.get("distance")) || 20,
+      distanceUnit: formData.get("distanceUnit") || "km",
+      maxOlder: parseInt(formData.get("maxOlder")) || 0,
+      maxYounger: parseInt(formData.get("maxYounger")) || 0
+    };
+
+    try {
+      const response = await fetch("/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatePayload)
+      });
+
+      if (response.ok) {
+        alert("Profile updated successfully.");
+        // Optionally: redirect or reload
+      } else {
+        const error = await response.text();
+        alert("Failed to update profile: " + error);
+      }
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Error saving profile.");
+    }
   }
-}
+
+  function updateCounter(textarea) {
+    const counter = textarea.nextElementSibling;
+    const maxLength = textarea.getAttribute("maxlength");
+    counter.textContent = `${textarea.value.length} / ${maxLength}`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".textarea-wrapper textarea").forEach(textarea => {
+      updateCounter(textarea);
+      textarea.addEventListener("input", () => updateCounter(textarea));
+    });
+  });
 </script>
 
 </body>

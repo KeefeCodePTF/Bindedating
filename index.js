@@ -54,6 +54,10 @@ app.use(matchRoutes);
 const swipeRoutes = require('./routes/swipeRoutes');
 app.use(swipeRoutes);
 
+//Use Upload Routes
+const uploadRoutes = require('./routes/uploadRoutes.js');
+app.use(uploadRoutes);
+
 //Use Message Routes
 const messageRoutes = require('./routes/messageRoutes.js');
 app.use(messageRoutes);
